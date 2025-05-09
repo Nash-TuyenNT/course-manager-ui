@@ -99,3 +99,21 @@ export async function enrollCourse(courseId: string) {
 
     return res.json();
 }
+
+export async function sendMessageToBot(message: string) {
+    const res = await fetch(`${BASE_URL}${API_PATH.CHATBOT}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+        },
+        body: JSON.stringify({ message: message }),
+    });
+
+    if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Failed to send message');
+    }
+
+    return res.json();
+}

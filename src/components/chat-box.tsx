@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from './auth-provider';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { sendMessageToBot } from '@/lib/api';
+import TypingIndicator from './ui/typing-indicator';
 
 interface Message {
     id: number;
@@ -12,9 +14,10 @@ interface Message {
 }
 
 export default function ChatBox() {
-    const { isAuthenticated } = useAuth(); // 👈 dùng hook ở đây
+    const { isAuthenticated } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
+    const [isTyping, setIsTyping] = useState(false)
     const [messages, setMessages] = useState<Message[]>([{
         id: Date.now(),
         text: "👋 Xin chào! Bạn cần giúp gì?",
@@ -28,10 +31,11 @@ export default function ChatBox() {
         }
     }, [messages]);
 
-    if (!isAuthenticated) return null; // 👈 ẩn nếu chưa đăng nhập
+    if (!isAuthenticated) return null;
 
 
-    const handleSend = () => {
+    const handleSend = async () => {
+        setIsTyping(true);
         if (!input.trim()) return;
 
         const newMessage: Message = {
@@ -41,20 +45,32 @@ export default function ChatBox() {
         };
 
         setMessages((prev) => [...prev, newMessage]);
+        setInput('');
 
-        // Optional: thêm phản hồi bot giả lập
-        setTimeout(() => {
+        try {
+            const data = await sendMessageToBot(newMessage.text);
+
             setMessages((prev) => [
                 ...prev,
                 {
                     id: Date.now() + 1,
-                    text: 'Tôi đã nhận được tin nhắn của bạn!',
+                    text: data.reply,
                     sender: 'bot',
                 },
             ]);
-        }, 500);
-
-        setInput('');
+        } catch (error) {
+            console.error(error);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    id: Date.now() + 2,
+                    text: 'Lỗi khi gửi tin nhắn. Vui lòng thử lại.',
+                    sender: 'bot',
+                },
+            ]);
+        } finally {
+            setIsTyping(false)
+        }
     };
 
     return (
@@ -75,6 +91,7 @@ export default function ChatBox() {
                                 {msg.text}
                             </div>
                         ))}
+                        {isTyping ? <TypingIndicator /> : null}
                         <div ref={messagesEndRef} />
                     </div>
 
