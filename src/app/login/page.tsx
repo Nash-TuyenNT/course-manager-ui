@@ -13,19 +13,24 @@ export default function LoginPage() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useAuth();
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
         try {
-            const res = await authenticate(username, password)
-            login(res.access_token)
+            const res = await authenticate(username, password);
+            login(res.access_token);
             router.push('/');
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             setError(err.message);
         }
+    };
+
+    if (isAuthenticated) {
+        router.push('/');
+        return;
     };
 
     return (
@@ -66,7 +71,7 @@ export default function LoginPage() {
                     Login
                 </Button>
                 <p className="text-sm text-center">
-                    Don’t have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <a href="/register" className="text-blue-600 hover:underline">Register</a>
                 </p>
 

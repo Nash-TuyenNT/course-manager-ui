@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/auth-provider";
+import ChatBox from "@/components/chat-box";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({
           <AuthProvider>
             <Header />
             {children}
+            <ChatBox />
           </AuthProvider>
         </ThemeProvider>
       </body>

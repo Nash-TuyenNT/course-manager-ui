@@ -1,30 +1,36 @@
 'use client';
 
+import { useAuth } from "@/components/auth-provider";
 import Protected from "@/components/protected";
+import Loading from "@/components/ui/loading";
 import { getCourse } from "@/lib/api";
 import { Course } from "@/types/course";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Home() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
     const fetchCourses = async () => {
-      try {
-        const data = await getCourse()
-        setCourses(data);
-      } catch (err) {
-        console.error('Error loading courses:', err);
-      } finally {
-        setLoading(false);
-      }
+      if (isAuthenticated) {
+        try {
+          const data = await getCourse();
+          setCourses(data);
+        } catch (err) {
+          console.error('Error loading courses:', err);
+        } finally {
+          setLoading(false);
+        }
+      } else setLoading(false);
     };
 
     fetchCourses();
-  }, []);
+  }, [isAuthenticated]);
 
-  if (loading) return <div className="p-4 text-lg">Loading...</div>;
+  if (loading) return <Loading />;
 
   return (
     <Protected>
@@ -35,11 +41,13 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {courses.map((course) => (
-              <div key={course.id} className="border rounded-lg p-4 shadow-xl bg-zinc-500">
-                <h2 className="text-xl font-semibold text-white">{course.title}</h2>
-                <p className="text-sm text-gray-300">{course.description}</p>
-                <p className="text-xs mt-2 text-gray-400">Created by: {course.creator_id}</p>
-              </div>
+              <Link href={`/course/${course.id}`} key={course.id}>
+                <div className="border rounded-lg p-4 shadow-xl bg-zinc-500 cursor-pointer">
+                  <h2 className="text-xl font-semibold text-white">{course.title}</h2>
+                  <p className="text-sm text-gray-300">{course.description}</p>
+                  <p className="text-xs mt-2 text-gray-400">Created by: {course.creator_id}</p>
+                </div>
+              </Link>
             ))}
           </div>
         )}

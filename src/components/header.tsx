@@ -40,7 +40,7 @@ export default function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
-                                    <Link href="/profile">Profile</Link>
+                                    <Link href="/my-courses">My Courses</Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => logout()}>
                                     Logout

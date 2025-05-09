@@ -1,3 +1,4 @@
+import { JwtUser } from '@/types/user';
 import { apiFetch } from './api-client';
 import { API_PATH } from './constants';
 
@@ -52,7 +53,7 @@ export async function register(username: string, password: string, role: string,
 
 
 export async function getCourse() {
-    const res = await apiFetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}${API_PATH.COURSES}`, {
+    const res = await apiFetch(`${BASE_URL}${API_PATH.COURSES}`, {
         method: 'GET',
         credentials: 'include',
     });
@@ -60,6 +61,40 @@ export async function getCourse() {
     if (!res.ok) {
         const { message } = await res.json();
         throw new Error(message || 'Failed to get courses');
+    }
+
+    return res.json();
+}
+
+export async function getCourseByUser(user: JwtUser | null) {
+    if (!user)
+        throw new Error('Unauthorized - User not found');
+    const res = await apiFetch(`${BASE_URL}${API_PATH.MY_COURSE(user.user_id)}`);
+    if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Failed to get courses');
+    }
+    return res.json();
+}
+
+export async function getCourseById(id: string) {
+    const res = await apiFetch(`${BASE_URL}${API_PATH.COURSES}${id}`);
+    if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Failed to get courses');
+    }
+
+    return res.json();
+}
+
+export async function enrollCourse(courseId: string) {
+    const res = await apiFetch(`${BASE_URL}${API_PATH.ENROLL_COURSE(courseId)}`, {
+        method: 'POST',
+    });
+
+    if (!res.ok) {
+        const { message } = await res.json();
+        throw new Error(message || 'Failed to enroll this course');
     }
 
     return res.json();
