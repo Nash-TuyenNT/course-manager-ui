@@ -1,4 +1,4 @@
-import { Lessons } from "./lesson";
+import { Lesson } from "./lesson";
 
 export type Course = {
     id: string;
@@ -21,7 +21,7 @@ export type CourseDetail = {
     title: string;
     description: string;
     creator_id: string;
-    lessons: Array<Lessons>;
+    lessons: Array<Lesson>;
     is_enrolled: boolean;
     is_completed: boolean;
 }

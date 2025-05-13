@@ -9,7 +9,7 @@ import { ThemeToggle } from './theme-toggle';
 import { useAuth } from './auth-provider';
 
 export default function Header() {
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated, logout, user } = useAuth();
     return (
         <header className="w-full border-b shadow-sm">
             <div className="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -22,7 +22,7 @@ export default function Header() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    {!isAuthenticated ? (
+                    {!isAuthenticated || !user ? (
                         <>
                             <Link href="/login">
                                 <Button variant="outline">Login</Button>
@@ -40,7 +40,13 @@ export default function Header() {
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
                                 <DropdownMenuItem asChild>
-                                    <Link href="/my-courses">My Courses</Link>
+                                    {user.role === 'admin' ? (
+                                        <Link href="/admin">Admin</Link>
+                                    ) : user.role === 'teacher' ? (
+                                        <Link href="/teacher">Teacher Profile</Link>
+                                    ) : (
+                                        <Link href="/my-courses">My Courses</Link>
+                                    )}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={() => logout()}>
                                     Logout

@@ -83,13 +83,13 @@ export default function ChatBox() {
 
                     <div className="flex-1 p-2 overflow-y-auto space-y-2 text-sm text-gray-700">
                         {messages.map((msg) => (
-                            <div
+                            <pre
                                 key={msg.id}
-                                className={`p-2 rounded max-w-[75%] ${msg.sender === 'user' ? 'bg-blue-100 self-end ml-auto' : 'bg-gray-100'
+                                className={`whitespace-pre-wrap break-words text-sm p-4 rounded-md ${msg.sender === 'user' ? 'text-right bg-blue-100 self-end ml-auto' : 'bg-gray-100'
                                     }`}
                             >
                                 {msg.text}
-                            </div>
+                            </pre>
                         ))}
                         {isTyping ? <TypingIndicator /> : null}
                         <div ref={messagesEndRef} />

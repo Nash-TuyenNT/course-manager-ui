@@ -5,5 +5,8 @@ export const API_PATH = {
     COURSES: '/courses/',
     MY_COURSE: (id: string | number) => `/courses/by-user/${id}`, //with user_id in path variable
     ENROLL_COURSE: (id: string | number) => `/courses/${id}/enroll`,
-    CHATBOT: '/chat/'
+    CHATBOT: '/chat/',
+    NEW_LESSON: (id: string | number) => `/lessons/course/${id}`,
+    LESSON: (id: string | number) => `/lessons/${id}`,
+    QUIZ: '/quizzes/'
 }

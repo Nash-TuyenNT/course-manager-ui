@@ -5,7 +5,7 @@ import { notFound, useParams } from 'next/navigation';
 import { enrollCourse, getCourseById } from '@/lib/api';
 import { CourseDetail } from '@/types/course';
 import Loading from '@/components/ui/loading';
-import { Lessons } from '@/types/lesson';
+import { Lesson } from '@/types/lesson';
 import Protected from '@/components/protected';
 import { Button } from '@/components/ui/button';
 
@@ -78,16 +78,16 @@ export default function CourseClient() {
                         </Button>
                     )}
                 </div>
-                <p className="dark:text-gray-400 mb-2">Description: {course.description}</p>
+                <p className="whitespace-pre-wrap break-words dark:text-gray-400 mb-2">Description: {course.description}</p>
                 <p className="dark:text-gray-400 text-sm">Author: {course.creator_id}</p>
 
                 <h2 className="text-2xl font-semibold mb-2">Lessons:</h2>
                 <ul className="space-y-2">
                     {course.lessons?.length > 0 ? (
-                        course.lessons.sort((a, b) => Number(a.id) - Number(b.id)).map((lesson: Lessons) => (
+                        course.lessons.sort((a, b) => Number(a.id) - Number(b.id)).map((lesson: Lesson) => (
                             <li key={lesson.id} className="p-3 border rounded shadow-sm">
                                 <h3 className="font-semibold">{lesson.title}</h3>
-                                <p className="text-sm dark:text-gray-300">Content: {lesson.content}</p>
+                                <p className="whitespace-pre-wrap break-words text-sm dark:text-gray-300">{lesson.content}</p>
                             </li>
                         ))
                     ) : (
