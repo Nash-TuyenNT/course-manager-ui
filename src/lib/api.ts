@@ -2,6 +2,7 @@ import { JwtUser } from '@/types/user';
 import { apiFetch } from './api-client';
 import { API_PATH } from './constants';
 import { QuizCreate } from '@/types/quiz';
+import { Message } from '@/components/chat-box';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -101,14 +102,14 @@ export async function enrollCourse(courseId: string) {
     return res.json();
 }
 
-export async function sendMessageToBot(message: string) {
+export async function sendMessageToBot(input: string, history: Message[]) {
     const res = await fetch(`${BASE_URL}${API_PATH.CHATBOT}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             Accept: 'application/json',
         },
-        body: JSON.stringify({ message: message }),
+        body: JSON.stringify({ input, history }),
     });
 
     if (!res.ok) {

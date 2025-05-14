@@ -1,6 +1,7 @@
 'use client'
 
 import { useAuth } from "@/components/auth-provider"
+import Protected from "@/components/protected"
 import QuizQuestionForm from "@/components/quiz-question"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -89,92 +90,94 @@ export default function LessonPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-4">Manage Lesson</h1>
+        <Protected>
+            <div className="max-w-4xl mx-auto p-6">
+                <h1 className="text-2xl font-bold mb-4">Manage Lesson</h1>
 
-            <div className="space-y-4 mb-8">
-                <Input
-                    className="w-full border p-2"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Lesson Title"
-                />
-                <textarea
-                    className="w-full border p-2"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Lesson Description"
-                />
-                <button
-                    onClick={handleUpdateLesson}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                >
-                    Save Changes
-                </button>
-            </div>
-
-            <h2 className="text-xl font-semibold mb-2">Quizzes List</h2>
-            <ul className="mb-6">
-                {quizzes.map((quiz) => (
-                    <div key={quiz.id} className="border rounded-md overflow-hidden">
-                        <button
-                            onClick={() => toggleQuiz(quiz.id)}
-                            className="w-full text-left px-4 py-3 dark:bg-gray-800 font-semibold"
-                        >
-                            {quiz.title} (Tối đa {quiz.max_attempts} lần làm)
-                        </button>
-
-                        {expandedQuizId === quiz.id && (
-                            <div className="px-4 py-3 space-y-4 dark:bg-gray-900">
-                                {quiz.questions.map((q, i) => (
-                                    <div key={i} className="border p-3 rounded">
-                                        <p className="font-medium mb-2">
-                                            Câu {i + 1}: {q.question}
-                                        </p>
-                                        <ul className="list-disc list-inside pl-2 space-y-1">
-                                            {q.choices.map((choice, idx) => (
-                                                <li
-                                                    key={idx}
-                                                    className={choice === q.correct_answer ? 'text-green-600 font-semibold' : ''}
-                                                >
-                                                    {choice}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </ul>
-
-            <h2 className="text-xl font-semibold mb-2">Add New Quiz</h2>
-            <div className="space-y-2">
-                <Input
-                    className="w-full border p-2"
-                    placeholder="Quiz Title"
-                    value={newQuiz.title}
-                    onChange={(e) => setNewQuiz((prev) => ({ ...prev, title: e.target.value }))}
-                />
-                <Input
-                    className="w-full border p-2"
-                    placeholder="Quiz max attempts"
-                    value={newQuiz.max_attempts!}
-                    type="number"
-                    onChange={(e) => setNewQuiz((prev) => ({ ...prev, max_attempts: Number(e.target.value) }))}
-                />
-                <div className="px-4 py-3 space-y-4 dark:bg-gray-900">
-                    <QuizQuestionForm questions={questions} setQuestions={setQuestions} />
+                <div className="space-y-4 mb-8">
+                    <Input
+                        className="w-full border p-2"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Lesson Title"
+                    />
+                    <textarea
+                        className="w-full border p-2"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="Lesson Description"
+                    />
+                    <button
+                        onClick={handleUpdateLesson}
+                        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                        Save Changes
+                    </button>
                 </div>
-                <Button
-                    onClick={handleAddQuiz}
-                    className="px-4 py-2 rounded"
-                >
-                    + Add Quiz
-                </Button>
+
+                <h2 className="text-xl font-semibold mb-2">Quizzes List</h2>
+                <ul className="mb-6">
+                    {quizzes.map((quiz) => (
+                        <div key={quiz.id} className="border rounded-md overflow-hidden">
+                            <button
+                                onClick={() => toggleQuiz(quiz.id)}
+                                className="w-full text-left px-4 py-3 dark:bg-gray-800 font-semibold"
+                            >
+                                {quiz.title} (Tối đa {quiz.max_attempts} lần làm)
+                            </button>
+
+                            {expandedQuizId === quiz.id && (
+                                <div className="px-4 py-3 space-y-4 dark:bg-gray-900">
+                                    {quiz.questions.map((q, i) => (
+                                        <div key={i} className="border p-3 rounded">
+                                            <p className="font-medium mb-2">
+                                                Câu {i + 1}: {q.question}
+                                            </p>
+                                            <ul className="list-disc list-inside pl-2 space-y-1">
+                                                {q.choices.map((choice, idx) => (
+                                                    <li
+                                                        key={idx}
+                                                        className={choice === q.correct_answer ? 'text-green-600 font-semibold' : ''}
+                                                    >
+                                                        {choice}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </ul>
+
+                <h2 className="text-xl font-semibold mb-2">Add New Quiz</h2>
+                <div className="space-y-2">
+                    <Input
+                        className="w-full border p-2"
+                        placeholder="Quiz Title"
+                        value={newQuiz.title}
+                        onChange={(e) => setNewQuiz((prev) => ({ ...prev, title: e.target.value }))}
+                    />
+                    <Input
+                        className="w-full border p-2"
+                        placeholder="Quiz max attempts"
+                        value={newQuiz.max_attempts!}
+                        type="number"
+                        onChange={(e) => setNewQuiz((prev) => ({ ...prev, max_attempts: Number(e.target.value) }))}
+                    />
+                    <div className="px-4 py-3 space-y-4 dark:bg-gray-900">
+                        <QuizQuestionForm questions={questions} setQuestions={setQuestions} />
+                    </div>
+                    <Button
+                        onClick={handleAddQuiz}
+                        className="px-4 py-2 rounded"
+                    >
+                        + Add Quiz
+                    </Button>
+                </div>
             </div>
-        </div>
+        </Protected>
     )
 
 }

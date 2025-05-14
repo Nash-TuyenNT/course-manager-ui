@@ -7,10 +7,14 @@ import { Input } from './ui/input';
 import { sendMessageToBot } from '@/lib/api';
 import TypingIndicator from './ui/typing-indicator';
 
-interface Message {
-    id: number;
-    text: string;
-    sender: 'user' | 'bot';
+export interface Message {
+    content: string;
+    sender: 'human' | 'ai';
+}
+
+const defaultMessage = {
+    content: "👋 Xin chào! Bạn cần giúp gì?",
+    sender: 'ai',
 }
 
 export default function ChatBox() {
@@ -18,17 +22,20 @@ export default function ChatBox() {
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false)
-    const [messages, setMessages] = useState<Message[]>([{
-        id: Date.now(),
-        text: "👋 Xin chào! Bạn cần giúp gì?",
-        sender: 'bot',
-    }]);
+    const [messages, setMessages] = useState<Message[]>(() => {
+        if (typeof window !== "undefined") {
+            const stored = localStorage.getItem("chat_messages");
+            return stored ? JSON.parse(stored) : [defaultMessage];
+        }
+        return [defaultMessage];
+    });
     const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
+        localStorage.setItem("chat_messages", JSON.stringify(messages));
     }, [messages]);
 
     if (!isAuthenticated) return null;
@@ -39,23 +46,21 @@ export default function ChatBox() {
         if (!input.trim()) return;
 
         const newMessage: Message = {
-            id: Date.now(),
-            text: input,
-            sender: 'user',
+            content: input,
+            sender: 'human',
         };
 
         setMessages((prev) => [...prev, newMessage]);
         setInput('');
 
         try {
-            const data = await sendMessageToBot(newMessage.text);
+            const data = await sendMessageToBot(newMessage.content, messages);
 
             setMessages((prev) => [
                 ...prev,
                 {
-                    id: Date.now() + 1,
-                    text: data.reply,
-                    sender: 'bot',
+                    content: data.output,
+                    sender: 'ai',
                 },
             ]);
         } catch (error) {
@@ -63,9 +68,8 @@ export default function ChatBox() {
             setMessages((prev) => [
                 ...prev,
                 {
-                    id: Date.now() + 2,
-                    text: 'Lỗi khi gửi tin nhắn. Vui lòng thử lại.',
-                    sender: 'bot',
+                    content: 'Lỗi khi gửi tin nhắn. Vui lòng thử lại.',
+                    sender: 'ai',
                 },
             ]);
         } finally {
@@ -82,13 +86,13 @@ export default function ChatBox() {
                     </div>
 
                     <div className="flex-1 p-2 overflow-y-auto space-y-2 text-sm text-gray-700">
-                        {messages.map((msg) => (
+                        {messages.map((msg, i) => (
                             <pre
-                                key={msg.id}
-                                className={`whitespace-pre-wrap break-words text-sm p-4 rounded-md ${msg.sender === 'user' ? 'text-right bg-blue-100 self-end ml-auto' : 'bg-gray-100'
+                                key={i}
+                                className={`whitespace-pre-wrap break-words text-sm p-4 rounded-md ${msg.sender === 'human' ? 'text-right bg-blue-100 self-end ml-auto' : 'bg-gray-100'
                                     }`}
                             >
-                                {msg.text}
+                                {msg.content}
                             </pre>
                         ))}
                         {isTyping ? <TypingIndicator /> : null}
